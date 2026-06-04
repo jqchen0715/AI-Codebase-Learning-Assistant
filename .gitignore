@@ -1,109 +1,119 @@
-# Dependencies
-node_modules/
-vendor/
-.pnp/
-.pnp.js
+# =========================
+# Generic ignores
+# =========================
+.DS_Store
+*~
+*.swp
+*.swo
+*.tmp
+*.temp
+.cache/
 
-# Build outputs
-dist/
-build/
-out/
-*.pyc
+# =========================
+# Python
+# =========================
+# Byte-compiled / optimized
 __pycache__/
+*.py[cod]
+*$py.class
 
-# Environment files
-.env
-.env.local
-.env.*.local
-.env.development
-.env.test
-.env.production
+# C extensions
+*.so
 
-# Python virtual environments
+# Distribution / packaging
+build/
+dist/
+out/
+eggs/
+.eggs/
+*.egg
+*.egg-info/
+pip-wheel-metadata/
+
+# Installer / wheel
+*.whl
+
+# Unit test / coverage
+.pytest_cache/
+.cache/
+.tox/
+.nox/
+.coverage
+.coverage.*
+coverage.xml
+htmlcov/
+nose2.xml
+
+# Jupyter
+.ipynb_checkpoints
+
+# pyenv
+.python-version
+
+# Virtual environments
 .venv/
 venv/
+ENV/
+env/
 
-# IDE - VSCode
+# =========================
+# Node / frontend
+# =========================
+node_modules/
+
+# =========================
+# IDEs / editors
+# =========================
 .vscode/*
 !.vscode/settings.json
 !.vscode/tasks.json
 !.vscode/launch.json
 !.vscode/extensions.json
-
-# IDE - JetBrains
 .idea/
 *.iml
-*.iws
-*.ipr
 
-# IDE - Eclipse
-.project
-.classpath
-.settings/
+# =========================
+# OS / system
+# =========================
+Thumbs.db
 
-# Logs
+# =========================
+# Logs and runtime files
+# =========================
 logs/
 *.log
-npm-debug.log*
-yarn-debug.log*
-yarn-error.log*
+output/
 
-# Operating System
-.DS_Store
-Thumbs.db
-*.swp
-*.swo
+# =========================
+# Local env / secrets
+# =========================
+.env
+.env.*
+llm_cache.json
 
-# Testing
-coverage/
-.nyc_output/
-
-# Temporary files
-*.tmp
-*.temp
-.cache/
-
-# Compiled files
-*.com
-*.class
-*.dll
-*.exe
-*.o
-*.so
-
-# Package files
-*.7z
-*.dmg
-*.gz
-*.iso
-*.jar
-*.rar
-*.tar
-*.zip
-
-# Database
+# =========================
+# Databases
+# =========================
 *.sqlite
 *.sqlite3
 *.db
 
-# Optional npm cache directory
-.npm
+# =========================
+# Misc
+# =========================
+*.pyc
+*.pyo
+*.pyd
+*.class
+*.o
+*.so
+*.dll
+*.exe
+*.log
+*.pdf
 
-# Optional eslint cache
-.eslintcache
-
-# Optional REPL history
-.node_repl_history 
-
-# LLM cache
-llm_cache.json
-
-# Output files
-output/
-
-# uv manage
+# Project-specific
 pyproject.toml
 uv.lock
 
 docs/*.pdf
-docs/design-cn.md

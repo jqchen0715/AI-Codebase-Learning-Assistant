@@ -1,3 +1,4 @@
+``` python
 import os
 import re
 import yaml
@@ -8,9 +9,16 @@ from utils.crawl_local_files import crawl_local_files
 
 
 # Helper to get content for specific file indices
-def get_content_for_indices(files_data, indices):
+#作用是：根据文件编号 indices，从全部文件列表 files_data 里取出指定文件的内容，并整理成一个字典，方便后面喂给 LLM。
+def get_content_for_indices(files_data, indices): #files_data：全部文件数据 indices：想要提取的文件编号列表
+    #创建一个空字典，用来保存最终结果。
     content_map = {}
-    for i in indices:
+    for i in indices: #遍历用户想要取出的文件编号。
+        #放进字典里面的内容为：
+        {
+    "0 # main.py": "...main.py 的代码内容...",
+    "2 # nodes.py": "...nodes.py 的代码内容..."
+        }
         if 0 <= i < len(files_data):
             path, content = files_data[i]
             content_map[f"{i} # {path}"] = (
@@ -18,11 +26,11 @@ def get_content_for_indices(files_data, indices):
             )
     return content_map
 
-
+#把一个任意名称转换成适合当文件名使用的安全字符串。
 def make_safe_filename(name):
     return "".join(c if c.isalnum() else "_" for c in name).lower()
 
-
+#根据章节编号和章节名，生成一个标准的 Markdown 文件名。
 def make_chapter_filename(chapter_num, chapter_name):
     return f"{chapter_num:02d}_{make_safe_filename(chapter_name)}.md"
 

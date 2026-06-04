@@ -1,175 +1,161 @@
-<h1 align="center">Turns Codebase into Easy Tutorial with AI</h1>
+# AI Codebase Learning Assistant
 
-![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)
- <a href="https://discord.gg/hUHHE9Sa6T">
-    <img src="https://img.shields.io/discord/1346833819172601907?logo=discord&style=flat">
-</a>
-> *Ever stared at a new codebase written by others feeling completely lost? This tutorial shows you how to build an AI agent that analyzes GitHub repositories and creates beginner-friendly tutorials explaining exactly how the code works.*
+把 GitHub 仓库或本地代码目录转换成完整学习资产，而不只是教程文档。
 
-<p align="center">
-  <img
-    src="./assets/banner.png" width="800"
-  />
-</p>
+输出包括：
+- `index.md`：项目总览 + 关系图 + 导航
+- `code_reading_route.md`：源码阅读路线（分阶段、分文件）
+- `interview_qa.md`：AI Agent 实习面试问答（可按方向偏置）
+- `project_mastery_report.md`：项目掌握度报告（入口、数据流、模块职责、扩展点、高频面试题）
+- `01_*.md`, `02_*.md`, ...：章节化教程
 
-This is a tutorial project of [Pocket Flow](https://github.com/The-Pocket/PocketFlow), a 100-line LLM framework. It crawls GitHub repositories and builds a knowledge base from the code. It analyzes entire codebases to identify core abstractions and how they interact, and transforms complex code into beginner-friendly tutorials with clear visualizations.
+## What It Solves
 
-- Check out the [YouTube Development Tutorial](https://youtu.be/AFY67zOpbSo) for more!
+- 初看项目不知道从哪里读
+- 能看懂局部代码，但抓不到整体数据流
+- 面试前无法把“读过的代码”转成可表达的答案
+- 缺少可执行的学习计划与掌握度检查
 
-- Check out the [Substack Post Tutorial](https://zacharyhuang.substack.com/p/ai-codebase-knowledge-builder-full) for more!
+## Quick Start
 
-&nbsp;&nbsp;**🔸 🎉 Reached Hacker News Front Page** (April 2025) with >900 up‑votes:  [Discussion »](https://news.ycombinator.com/item?id=43739456)
+1. 克隆仓库
+```bash
+git clone https://github.com/The-Pocket/PocketFlow-Tutorial-Codebase-Knowledge
+cd PocketFlow-Tutorial-Codebase-Knowledge
+```
 
-&nbsp;&nbsp;**🔸 🎊 Online Service Now Live!** (May&nbsp;2025) Try our new online version at [https://code2tutorial.com/](https://code2tutorial.com/) – just paste a GitHub link, no installation needed!
+2. 安装依赖
+```bash
+pip install -r requirements.txt
+```
 
-## ⭐ Example Results for Popular GitHub Repositories!
+3. 配置模型环境变量（可放到 `.env`）
+- 默认 Gemini：`GEMINI_API_KEY`
+- 可选自定义 provider：`LLM_PROVIDER`, `<PROVIDER>_MODEL`, `<PROVIDER>_URL`, `<PROVIDER>_API_KEY`
+- 可选 GitHub token（提速/私有库）：`GITHUB_TOKEN`
 
-<p align="center">
-    <img
-      src="./assets/example.png" width="600"
-    />
-</p>
+4. 运行最小示例
+```bash
+python main.py --repo https://github.com/username/repo
+```
 
-🤯 All these tutorials are generated **entirely by AI** by crawling the GitHub repo!
+## Output Structure
 
-- [AutoGen Core](https://the-pocket.github.io/PocketFlow-Tutorial-Codebase-Knowledge/AutoGen%20Core) - Build AI teams that talk, think, and solve problems together like coworkers!
+默认输出目录：`./output/<project_name>/`
 
-- [Browser Use](https://the-pocket.github.io/PocketFlow-Tutorial-Codebase-Knowledge/Browser%20Use) - Let AI surf the web for you, clicking buttons and filling forms like a digital assistant!
+- `index.md`
+- `code_reading_route.md`
+- `interview_qa.md`
+- `project_mastery_report.md`
+- `01_<chapter>.md`, `02_<chapter>.md`, ...
 
-- [Celery](https://the-pocket.github.io/PocketFlow-Tutorial-Codebase-Knowledge/Celery) - Supercharge your app with background tasks that run while you sleep!
+## Full CLI
 
-- [Click](https://the-pocket.github.io/PocketFlow-Tutorial-Codebase-Knowledge/Click) - Turn Python functions into slick command-line tools with just a decorator!
+```bash
+python main.py \
+  (--repo <github_url> | --dir <local_dir>) \
+  [-n <project_name>] \
+  [-t <github_token>] \
+  [-o <output_dir>] \
+  [-i <include_patterns...>] \
+  [-e <exclude_patterns...>] \
+  [-s <max_file_size>] \
+  [--language <language>] \
+  [--learner-level <beginner|intermediate|advanced>] \
+  [--interview-focus <general|backend|agent-framework|rag|llm-infra|eval>] \
+  [--mastery-horizon <3d|7d|14d>] \
+  [--max-abstractions <int>] \
+  [--no-cache]
+```
 
-- [Codex](https://the-pocket.github.io/PocketFlow-Tutorial-Codebase-Knowledge/Codex) - Turn plain English into working code with this AI terminal wizard!
+## Parameter Reference
 
-- [Crawl4AI](https://the-pocket.github.io/PocketFlow-Tutorial-Codebase-Knowledge/Crawl4AI) - Train your AI to extract exactly what matters from any website!
+- `--repo` / `--dir`：二选一，GitHub 仓库地址或本地目录
+- `-n, --name`：项目名（不传会自动推断）
+- `-t, --token`：GitHub token（也可用 `GITHUB_TOKEN`）
+- `-o, --output`：输出根目录（默认 `output`）
+- `-i, --include`：包含文件模式（如 `*.py` `*.ts`）
+- `-e, --exclude`：排除文件模式（如 `tests/*` `docs/*`）
+- `-s, --max-size`：单文件最大字节数（默认 `100000`）
+- `--language`：生成语言（默认 `english`）
+- `--learner-level`：讲解深度
+  - `beginner`：更强调概念、类比、入门路径
+  - `intermediate`：更强调职责、协作、改动点
+  - `advanced`：更强调不变量、扩展点、性能与权衡
+- `--interview-focus`：面试问答偏置方向
+  - `general`：均衡
+  - `backend`：可靠性、边界、并发、容错
+  - `agent-framework`：编排、状态传递、工具调用
+  - `rag`：检索链路、索引/召回权衡、grounding
+  - `llm-infra`：provider 抽象、缓存重试、成本时延质量权衡
+  - `eval`：评测指标、回归防护、质量诊断
+- `--mastery-horizon`：掌握度报告学习周期
+  - `3d`：短冲刺
+  - `7d`：默认平衡
+  - `14d`：深入掌握
+- `--max-abstractions`：抽象数量上限（默认 `10`）
+- `--no-cache`：关闭 LLM 缓存
 
-- [CrewAI](https://the-pocket.github.io/PocketFlow-Tutorial-Codebase-Knowledge/CrewAI) - Assemble a dream team of AI specialists to tackle impossible problems!
+## Common Run Recipes
 
-- [DSPy](https://the-pocket.github.io/PocketFlow-Tutorial-Codebase-Knowledge/DSPy) - Build LLM apps like Lego blocks that optimize themselves!
+1. 生成中文 + 中级讲解 + 后端面试偏置 + 7天掌握计划
+```bash
+python main.py \
+  --repo https://github.com/username/repo \
+  --language Chinese \
+  --learner-level intermediate \
+  --interview-focus backend \
+  --mastery-horizon 7d
+```
 
-- [FastAPI](https://the-pocket.github.io/PocketFlow-Tutorial-Codebase-Knowledge/FastAPI) - Create APIs at lightning speed with automatic docs that clients will love!
+2. 针对 Agent 框架实习面试
+```bash
+python main.py \
+  --repo https://github.com/username/repo \
+  --interview-focus agent-framework \
+  --mastery-horizon 14d
+```
 
-- [Flask](https://the-pocket.github.io/PocketFlow-Tutorial-Codebase-Knowledge/Flask) - Craft web apps with minimal code that scales from prototype to production!
+3. 分析本地目录并限制文件范围
+```bash
+python main.py \
+  --dir /path/to/codebase \
+  --include "*.py" "*.md" \
+  --exclude "tests/*" "docs/*" \
+  --learner-level beginner
+```
 
-- [Google A2A](https://the-pocket.github.io/PocketFlow-Tutorial-Codebase-Knowledge/Google%20A2A) - The universal language that lets AI agents collaborate across borders!
+## Docker
 
-- [LangGraph](https://the-pocket.github.io/PocketFlow-Tutorial-Codebase-Knowledge/LangGraph) - Design AI agents as flowcharts where each step remembers what happened before!
+1. 构建镜像
+```bash
+docker build -t pocketflow-app .
+```
 
-- [LevelDB](https://the-pocket.github.io/PocketFlow-Tutorial-Codebase-Knowledge/LevelDB) - Store data at warp speed with Google's engine that powers blockchains!
+2. 运行（分析 GitHub 仓库）
+```bash
+docker run -it --rm \
+  -e GEMINI_API_KEY="YOUR_GEMINI_API_KEY" \
+  -e GITHUB_TOKEN="YOUR_GITHUB_TOKEN" \
+  -v "$(pwd)/output_tutorials":/app/output \
+  pocketflow-app \
+  --repo https://github.com/username/repo \
+  --interview-focus backend \
+  --mastery-horizon 7d
+```
 
-- [MCP Python SDK](https://the-pocket.github.io/PocketFlow-Tutorial-Codebase-Knowledge/MCP%20Python%20SDK) - Build powerful apps that communicate through an elegant protocol without sweating the details!
+3. 运行（分析本地代码目录）
+```bash
+docker run -it --rm \
+  -e GEMINI_API_KEY="YOUR_GEMINI_API_KEY" \
+  -v "/path/to/your/local_codebase":/app/code_to_analyze \
+  -v "$(pwd)/output_tutorials":/app/output \
+  pocketflow-app \
+  --dir /app/code_to_analyze
+```
 
-- [NumPy Core](https://the-pocket.github.io/PocketFlow-Tutorial-Codebase-Knowledge/NumPy%20Core) - Master the engine behind data science that makes Python as fast as C!
+## Notes
 
-- [OpenManus](https://the-pocket.github.io/PocketFlow-Tutorial-Codebase-Knowledge/OpenManus) - Build AI agents with digital brains that think, learn, and use tools just like humans do!
-
-- [PocketFlow](https://the-pocket.github.io/PocketFlow-Tutorial-Codebase-Knowledge/PocketFlow) - 100-line LLM framework. Let Agents build Agents!
-
-- [Pydantic Core](https://the-pocket.github.io/PocketFlow-Tutorial-Codebase-Knowledge/Pydantic%20Core) - Validate data at rocket speed with just Python type hints!
-
-- [Requests](https://the-pocket.github.io/PocketFlow-Tutorial-Codebase-Knowledge/Requests) - Talk to the internet in Python with code so simple it feels like cheating!
-
-- [SmolaAgents](https://the-pocket.github.io/PocketFlow-Tutorial-Codebase-Knowledge/SmolaAgents) - Build tiny AI agents that punch way above their weight class!
-
-- Showcase Your AI-Generated Tutorials in [Discussions](https://github.com/The-Pocket/PocketFlow-Tutorial-Codebase-Knowledge/discussions)!
-
-## 🚀 Getting Started
-
-1. Clone this repository
-   ```bash
-   git clone https://github.com/The-Pocket/PocketFlow-Tutorial-Codebase-Knowledge
-   ```
-
-3. Install dependencies:
-   ```bash
-   pip install -r requirements.txt
-   ```
-
-4. Set up LLM in [`utils/call_llm.py`](./utils/call_llm.py) by providing credentials. To do so, you can put the values in a `.env` file. By default, you can use the AI Studio key with this client for Gemini Pro 2.5 by setting the `GEMINI_API_KEY` environment variable. If you want to use another LLM, you can set the `LLM_PROVIDER` environment variable (e.g. `XAI`), and then set the model, url, and API key (e.g. `XAI_MODEL`, `XAI_URL`,`XAI_API_KEY`). If using Ollama, the url is `http://localhost:11434/` and the API key can be omitted.
-   You can use your own models. We highly recommend the latest models with thinking capabilities (Claude 3.7 with thinking, O1). You can verify that it is correctly set up by running:
-   ```bash
-   python utils/call_llm.py
-   ```
-
-5. Generate a complete codebase tutorial by running the main script:
-    ```bash
-    # Analyze a GitHub repository
-    python main.py --repo https://github.com/username/repo --include "*.py" "*.js" --exclude "tests/*" --max-size 50000
-
-    # Or, analyze a local directory
-    python main.py --dir /path/to/your/codebase --include "*.py" --exclude "*test*"
-
-    # Or, generate a tutorial in Chinese
-    python main.py --repo https://github.com/username/repo --language "Chinese"
-    ```
-
-    - `--repo` or `--dir` - Specify either a GitHub repo URL or a local directory path (required, mutually exclusive)
-    - `-n, --name` - Project name (optional, derived from URL/directory if omitted)
-    - `-t, --token` - GitHub token (or set GITHUB_TOKEN environment variable)
-    - `-o, --output` - Output directory (default: ./output)
-    - `-i, --include` - Files to include (e.g., "`*.py`" "`*.js`")
-    - `-e, --exclude` - Files to exclude (e.g., "`tests/*`" "`docs/*`")
-    - `-s, --max-size` - Maximum file size in bytes (default: 100KB)
-    - `--language` - Language for the generated tutorial (default: "english")
-    - `--max-abstractions` - Maximum number of abstractions to identify (default: 10)
-    - `--no-cache` - Disable LLM response caching (default: caching enabled)
-
-The application will crawl the repository, analyze the codebase structure, generate tutorial content in the specified language, and save the output in the specified directory (default: ./output).
-
-
-<details>
- 
-<summary> 🐳 <b>Running with Docker</b> </summary>
-
-To run this project in a Docker container, you'll need to pass your API keys as environment variables. 
-
-1. Build the Docker image
-   ```bash
-   docker build -t pocketflow-app .
-   ```
-
-2. Run the container
-
-   You'll need to provide your `GEMINI_API_KEY` for the LLM to function. If you're analyzing private GitHub repositories or want to avoid rate limits, also provide your `GITHUB_TOKEN`.
-   
-   Mount a local directory to `/app/output` inside the container to access the generated tutorials on your host machine.
-   
-   **Example for analyzing a public GitHub repository:**
-   
-   ```bash
-   docker run -it --rm \
-     -e GEMINI_API_KEY="YOUR_GEMINI_API_KEY_HERE" \
-     -v "$(pwd)/output_tutorials":/app/output \
-     pocketflow-app --repo https://github.com/username/repo
-   ```
-   
-   **Example for analyzing a local directory:**
-   
-   ```bash
-   docker run -it --rm \
-     -e GEMINI_API_KEY="YOUR_GEMINI_API_KEY_HERE" \
-     -v "/path/to/your/local_codebase":/app/code_to_analyze \
-     -v "$(pwd)/output_tutorials":/app/output \
-     pocketflow-app --dir /app/code_to_analyze
-   ```
-</details>
-
-## 💡 Development Tutorial
-
-- I built using [**Agentic Coding**](https://zacharyhuang.substack.com/p/agentic-coding-the-most-fun-way-to), the fastest development paradigm, where humans simply [design](docs/design.md) and agents [code](flow.py).
-
-- The secret weapon is [Pocket Flow](https://github.com/The-Pocket/PocketFlow), a 100-line LLM framework that lets Agents (e.g., Cursor AI) build for you
-
-- Check out the Step-by-step YouTube development tutorial:
-
-<br>
-<div align="center">
-  <a href="https://youtu.be/AFY67zOpbSo" target="_blank">
-    <img src="./assets/youtube_thumbnail.png" width="500" alt="Pocket Flow Codebase Tutorial" style="cursor: pointer;">
-  </a>
-</div>
-<br>
-
-
-
+- `docs/design.md` 记录了流程和节点设计。
+- 模型调用逻辑在 `utils/call_llm.py`。
+- 若你希望把输出进一步变成“每日训练模式”，可以在后续扩展 `project_mastery_report.md` 的任务模板与打分规则。
