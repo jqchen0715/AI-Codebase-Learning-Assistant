@@ -49,6 +49,36 @@ python main.py --repo https://github.com/username/repo
 - `project_mastery_report.md`
 - `01_<chapter>.md`, `02_<chapter>.md`, ...
 
+## Quantitative Results & Demo Evidence
+
+当前仓库已包含一批可查看的生成样本，可作为面试或项目汇报时的量化证据。完整统计口径、Demo 清单、耗时样本、重试效果说明和输出质量 Rubric 见 [`docs/evaluation.md`](docs/evaluation.md)。
+
+| 指标 | 当前结果 | 口径 |
+| --- | --- | --- |
+| 输入源支持 | GitHub 仓库 URL + 本地目录 | CLI 二选一：`--repo` 或 `--dir`；GitHub token 可选 |
+| 已沉淀 Demo 仓库数 | 20 个 | `docs/` 下 20 个项目目录，包括 PocketFlow、FastAPI、LangGraph、Celery、Codex、CrewAI 等 |
+| 已生成 Markdown 文档 | 184 个 | `docs/*/*.md` 总数 |
+| 已生成教程章节 | 164 个 | `docs/*/*.md` 中排除各项目 `index.md` 后的章节文件 |
+| 单仓输出完整度 | 4 类核心资产 + N 个章节 | `index.md`、阅读路线、面试问答、掌握度报告、章节教程 |
+| 本项目自分析 Demo | 22 个 Markdown 文件 | `output/PocketFlow-Tutorial-Codebase-Knowledge#/`，包含 4 类核心资产和多轮章节输出 |
+| 日志样本耗时 | 33 分 34 秒 | `logs/llm_calls_20260512.log` 中 2026-05-12 13:12:44.926 -> 13:46:19.825 的生成区间 |
+| 主流程节点成功率 | Demo 样本 9/9 到达最终输出 | 以 `FetchRepo` 到 `CombineTutorial` 全链路产物落盘作为验收 |
+| 关键资产成功率 | Demo 样本 4/4 | `index.md`、`code_reading_route.md`、`interview_qa.md`、`project_mastery_report.md` 均存在 |
+| 重试机制配置 | 7 个 LLM 节点均为 `max_retries=5, wait=20` | 首次请求可用缓存，重试时绕过缓存重新请求模型；尚未做 retry on/off A/B |
+| 输出质量评估 | 已补人工 5 维 Rubric | 结构完整性、代码锚定度、学习可执行性、面试可表达性、一致性；自动评分待实现 |
+
+输出质量建议用 5 个维度做人工评估或后续自动化回归：
+- 结构完整性：是否生成 4 类核心资产和完整章节导航。
+- 代码锚定度：回答是否引用实际文件、类、函数或模块职责。
+- 学习可执行性：阅读路线是否按阶段给出文件顺序、检查点和练习。
+- 面试可表达性：Q&A 是否包含追问、标准回答和项目权衡。
+- 一致性：章节顺序、关系图、阅读路线和掌握度报告是否互相对齐。
+
+可复现统计：
+```bash
+python tools/collect_metrics.py
+```
+
 ## Full CLI
 
 ```bash
